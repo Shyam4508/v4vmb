@@ -831,24 +831,32 @@ function updateCartDisplay() {
   for (const productName in cart) {
     const item = cart[productName];
     const product = item.product;
-    let qtyDisplay = "", unitPrice = "", itemTotal = 0;
+    let qtyDisplay = "", unitPrice = "", itemTotal = 0, unit = "";
 
     if (product.type === "combo") {
-      qtyDisplay = `${item.quantity} pack`;
-      unitPrice = `₹${product.price} / pack`;
+      unit = "pack";
       itemTotal = item.quantity * product.price;
+      unitPrice = `₹${product.price} / ${unit}`;
+      qtyDisplay = `
+        <button onclick="adjustCartItem('${productName}', -1)">-</button>
+        ${item.quantity}
+        <button onclick="adjustCartItem('${productName}', 1)">+</button>
+      `;
     } else {
-      qtyDisplay = item.quantity >= 1000
-        ? `${(item.quantity / 1000).toFixed(2)} kg`
-        : `${item.quantity} g`;
-      unitPrice = `₹${product.price} / ${product.minQty === 250 ? '250g' : '100g'}`;
-      itemTotal = (item.quantity / (product.minQty === 250 ? 250 : 100)) * product.price;
+      unit = product.minQty === 250 ? 250 : 100;
+      itemTotal = (item.quantity / unit) * product.price;
+      unitPrice = `₹${product.price} / ${unit}g`;
+      qtyDisplay = `
+        <button onclick="adjustCartItem('${productName}', -${unit})">-</button>
+        ${item.quantity >= 1000 ? (item.quantity / 1000).toFixed(2) + " kg" : item.quantity + " g"}
+        <button onclick="adjustCartItem('${productName}', ${unit})">+</button>
+      `;
     }
 
     total += itemTotal;
 
     cartHTML += `
-      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;">
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #eee;">
         <div style="flex:2;">${productName}</div>
         <div style="flex:1; text-align:center;">${qtyDisplay}</div>
         <div style="flex:1; text-align:center;">${unitPrice}</div>
