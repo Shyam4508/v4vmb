@@ -809,53 +809,57 @@
       if (cartCount2) cartCount2.textContent = count;
     }
 
-    function updateCartDisplay() {
-      const cartItemsContainer = document.getElementById("panel-cart-items");
-      let total = 0;
-      
-      if (Object.keys(cart).length === 0) {
-        cartItemsContainer.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
-        document.querySelector(".cart-summary p").textContent = `Total: ₹0.00`;
-        return;
-      }
-      
-      let cartItemsHTML = '';
-      for (const productName in cart) {
-        const item = cart[productName];
-        let itemTotal = 0;
-        let qtyControls = "";
-        
-        if (item.product.type === "combo") {
-          itemTotal = item.quantity * item.product.price;
-          qtyControls = `
-            <button onclick="adjustCartItem('${productName}', -1)">-</button>
-            ${item.quantity} Pack${item.quantity > 1 ? 's' : ''}
-            <button onclick="adjustCartItem('${productName}', 1)">+</button>
-          `;
-        } else {
-          // For weight-based items, price is per 100g
-          itemTotal = (item.quantity / 100) * item.product.price;
-          qtyControls = `
-            <button onclick="adjustCartItem('${productName}', -${item.product.minQty === 250 ? 250 : 100})">-</button>
-            ${item.quantity >= 1000 ? (item.quantity/1000).toFixed(2) + ' kg' : item.quantity + ' g'}
-            <button onclick="adjustCartItem('${productName}', ${item.product.minQty === 250 ? 250 : 100})">+</button>
-          `;
-        }
-        
-        total += itemTotal;
-        
-        cartItemsHTML += `
-          <div class="cart-item">
-            <div class="cart-item-name">${productName}</div>
-            <div class="cart-item-qty">${qtyControls}</div>
-            <div class="cart-item-price">₹${itemTotal.toFixed(2)}</div>
-          </div>
-        `;
-      }
-      
-      cartItemsContainer.innerHTML = cartItemsHTML;
-      document.querySelector(".cart-summary p").textContent = `Total: ₹${total.toFixed(2)}`;
+function updateCartDisplay() {
+  const cartItemsContainer = document.getElementById("panel-cart-items");
+  let total = 0;
+
+  if (Object.keys(cart).length === 0) {
+    cartItemsContainer.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
+    document.querySelector(".cart-summary p").textContent = `Total: ₹0.00`;
+    return;
+  }
+
+  let cartHTML = `
+    <div style="font-weight:bold; display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #ccc;">
+      <div style="flex:2;">Product</div>
+      <div style="flex:1; text-align:center;">Qty/Vol</div>
+      <div style="flex:1; text-align:center;">Unit Price</div>
+      <div style="flex:1; text-align:right;">Total</div>
+    </div>
+  `;
+
+  for (const productName in cart) {
+    const item = cart[productName];
+    const product = item.product;
+    let qtyDisplay = "", unitPrice = "", itemTotal = 0;
+
+    if (product.type === "combo") {
+      qtyDisplay = `${item.quantity} pack`;
+      unitPrice = `₹${product.price} / pack`;
+      itemTotal = item.quantity * product.price;
+    } else {
+      qtyDisplay = item.quantity >= 1000
+        ? `${(item.quantity / 1000).toFixed(2)} kg`
+        : `${item.quantity} g`;
+      unitPrice = `₹${product.price} / ${product.minQty === 250 ? '250g' : '100g'}`;
+      itemTotal = (item.quantity / (product.minQty === 250 ? 250 : 100)) * product.price;
     }
+
+    total += itemTotal;
+
+    cartHTML += `
+      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;">
+        <div style="flex:2;">${productName}</div>
+        <div style="flex:1; text-align:center;">${qtyDisplay}</div>
+        <div style="flex:1; text-align:center;">${unitPrice}</div>
+        <div style="flex:1; text-align:right;">₹${itemTotal.toFixed(2)}</div>
+      </div>
+    `;
+  }
+
+  cartItemsContainer.innerHTML = cartHTML;
+  document.querySelector(".cart-summary p").textContent = `Total Payable: ₹${total.toFixed(2)}`;
+}
 
     function adjustCartItem(productName, adjustment) {
       if (!cart[productName]) return;
