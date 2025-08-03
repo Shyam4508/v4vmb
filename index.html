@@ -809,62 +809,53 @@
       if (cartCount2) cartCount2.textContent = count;
     }
 
-function updateCartDisplay() {
-  const cartItemsContainer = document.getElementById("panel-cart-items");
-  let total = 0;
-
-  if (Object.keys(cart).length === 0) {
-    cartItemsContainer.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
-    document.querySelector(".cart-summary p").textContent = `Total: ₹0.00`;
-    return;
-  }
-
-  let cartHTML = `
-    <div style="font-weight:bold; display:grid; grid-template-columns: 2fr 2fr 1fr 1fr; gap: 10px; padding: 10px 0; border-bottom: 2px solid #ccc;">
-      <div>Product</div>
-      <div style="text-align:center;">Qty/Vol</div>
-      <div style="text-align:center;">Unit Price</div>
-      <div style="text-align:right;">Total</div>
-    </div>
-  `;
-
-  for (const productName in cart) {
-    const item = cart[productName];
-    const product = item.product;
-    let unit = product.type === "combo" ? "pack" : (product.minQty === 250 ? 250 : 100);
-    let itemTotal = (product.type === "combo")
-      ? item.quantity * product.price
-      : (item.quantity / unit) * product.price;
-    let unitLabel = product.type === "combo" ? `₹${product.price} / pack` : `₹${product.price} / ${unit}g`;
-    let quantityDisplay = product.type === "combo"
-      ? `${item.quantity}`
-      : item.quantity >= 1000
-        ? `${(item.quantity / 1000).toFixed(2)} kg`
-        : `${item.quantity} g`;
-
-    const qtyButtons = `
-      <div style="display:flex; justify-content:center; align-items:center; gap:8px;">
-        <button onclick="adjustCartItem('${productName}', -${unit})" style="width:30px;height:30px;">-</button>
-        <span>${quantityDisplay}</span>
-        <button onclick="adjustCartItem('${productName}', ${unit})" style="width:30px;height:30px;">+</button>
-      </div>
-    `;
-
-    cartHTML += `
-      <div style="display:grid; grid-template-columns: 2fr 2fr 1fr 1fr; gap: 10px; align-items:center; padding:10px 0; border-bottom:1px solid #eee;">
-        <div>${productName}</div>
-        <div>${qtyButtons}</div>
-        <div style="text-align:center;">${unitLabel}</div>
-        <div style="text-align:right;">₹${itemTotal.toFixed(2)}</div>
-      </div>
-    `;
-
-    total += itemTotal;
-  }
-
-  cartItemsContainer.innerHTML = cartHTML;
-  document.querySelector(".cart-summary p").textContent = `Total Payable: ₹${total.toFixed(2)}`;
-}
+    function updateCartDisplay() {
+      const cartItemsContainer = document.getElementById("panel-cart-items");
+      let total = 0;
+      
+      if (Object.keys(cart).length === 0) {
+        cartItemsContainer.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
+        document.querySelector(".cart-summary p").textContent = `Total: ₹0.00`;
+        return;
+      }
+      
+      let cartItemsHTML = '';
+      for (const productName in cart) {
+        const item = cart[productName];
+        let itemTotal = 0;
+        let qtyControls = "";
+        
+        if (item.product.type === "combo") {
+          itemTotal = item.quantity * item.product.price;
+          qtyControls = `
+            <button onclick="adjustCartItem('${productName}', -1)">-</button>
+            ${item.quantity} Pack${item.quantity > 1 ? 's' : ''}
+            <button onclick="adjustCartItem('${productName}', 1)">+</button>
+          `;
+        } else {
+          // For weight-based items, price is per 100g
+          itemTotal = (item.quantity / 100) * item.product.price;
+          qtyControls = `
+            <button onclick="adjustCartItem('${productName}', -${item.product.minQty === 250 ? 250 : 100})">-</button>
+            ${item.quantity >= 1000 ? (item.quantity/1000).toFixed(2) + ' kg' : item.quantity + ' g'}
+            <button onclick="adjustCartItem('${productName}', ${item.product.minQty === 250 ? 250 : 100})">+</button>
+          `;
+        }
+        
+        total += itemTotal;
+        
+        cartItemsHTML += `
+          <div class="cart-item">
+            <div class="cart-item-name">${productName}</div>
+            <div class="cart-item-qty">${qtyControls}</div>
+            <div class="cart-item-price">₹${itemTotal.toFixed(2)}</div>
+          </div>
+        `;
+      }
+      
+      cartItemsContainer.innerHTML = cartItemsHTML;
+      document.querySelector(".cart-summary p").textContent = `Total: ₹${total.toFixed(2)}`;
+    }
 
     function adjustCartItem(productName, adjustment) {
       if (!cart[productName]) return;
