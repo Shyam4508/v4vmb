@@ -1322,29 +1322,15 @@ function updateCartDisplay4() {
 
   let cartItemsHTML = '';
   for (const item in cart) {
-    const cartItem = cart[item];
-    let itemTotal = 0;
-    let displayQty = "";
-    let qtyControls = "";
+    if (!products[item]) continue; // Skip if item not in known product list
 
-    if (cartItem.qty !== undefined) {
-      // Combo pack
-      itemTotal = cartItem.qty * cartItem.price;
-      displayQty = `${cartItem.qty} Pack`;
-      qtyControls = `
-        <button onclick="adjustCartItem4('${item}', -1)">-</button>
-        ${cartItem.qty}
-        <button onclick="adjustCartItem4('${item}', 1)">+</button>
-      `;
-} else if (cartItem.qty !== undefined) {
-  itemTotal = cartItem.qty * cartItem.price;
-  displayQty = `${cartItem.qty} Pack${cartItem.qty !== 1 ? 's' : ''}`;
-  qtyControls = `
-    <button onclick="adjustCartItem4('${item}', -1)">-</button>
-    ${cartItem.qty} Pack${cartItem.qty !== 1 ? 's' : ''}
-    <button onclick="adjustCartItem4('${item}', 1)">+</button>
-  `;
-    }
+    const cartItem = cart[item];
+    const itemTotal = cartItem.qty * cartItem.price;
+    const qtyControls = `
+      <button onclick="adjustCartItem4('${item}', -1)">-</button>
+      ${cartItem.qty} Pack${cartItem.qty !== 1 ? 's' : ''}
+      <button onclick="adjustCartItem4('${item}', 1)">+</button>
+    `;
 
     total += itemTotal;
 
@@ -1357,10 +1343,10 @@ function updateCartDisplay4() {
     `;
   }
 
-  cartItemsContainer.innerHTML = cartItemsHTML;
+  cartItemsContainer.innerHTML = cartItemsHTML || '<div class="empty-cart">Your cart is empty</div>';
   document.querySelector(".cart-summary p").textContent = `Total: ₹${total.toFixed(2)}`;
 }
-  
+
 function adjustCartItem4(productName, gramAdjustment) {
 if (!cart[productName]) return;
 
