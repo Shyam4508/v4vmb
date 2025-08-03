@@ -812,12 +812,12 @@ function renderProducts() {
       }
     }
 
-    function updateCartCount() {
-      const count = Object.keys(cart).length;
-      document.getElementById("cartCount").textContent = count;
-      const cartCount2 = document.getElementById("cartCount2");
-      if (cartCount2) cartCount2.textContent = count;
-    }
+function updateCartCount() {
+  const count = Object.keys(cart).length;
+  document.getElementById("cartCount").textContent = count;
+  const cartCount2 = document.getElementById("cartCount2");
+  if (cartCount2) cartCount2.textContent = count;
+}
 
     function updateCartDisplay() {
       const cartItemsContainer = document.getElementById("panel-cart-items");
@@ -929,7 +929,7 @@ function addToCart1(productName) {
 
   updateStatus1(productName);
   updateCartDisplay1();
-  updateCartCount1();
+  updateCartCount();
 }
 
 function removeFromCart1(productName) {
@@ -1026,7 +1026,7 @@ function adjustCartItem1(productName, gramAdjustment) {
 
   updateStatus1(productName);
   updateCartDisplay1();
-  updateCartCount1();
+  updateCartCount();
 }
 
     function toggleCartPanel1() {
@@ -1077,7 +1077,7 @@ function removeFromCart3(productName) {
 
   updateStatus3(productName);
   updateCartDisplay3();
-  updateCartCount3();
+  updateCartCount();
 }
 
 function updateStatus3(productName) {
@@ -1159,7 +1159,7 @@ function adjustCartItem3(productName, gramAdjustment) {
 
   updateStatus3(productName);
   updateCartDisplay3();
-  updateCartCount3();
+  updateCartCount();
 }
 
     function toggleCartPanel3() {
@@ -1276,7 +1276,7 @@ function addToCart4(productName) {
 
   updateStatus4(productName);
   updateCartDisplay4();
-  updateCartCount4();
+  updateCartCount();
 }
 
 function removeFromCart4(productName) {
@@ -1291,7 +1291,7 @@ function removeFromCart4(productName) {
 
   updateStatus4(productName);
   updateCartDisplay4();
-  updateCartCount4();
+  updateCartCount();
 }
 
 function updateStatus4(productName) {
@@ -1355,7 +1355,7 @@ if (cart[productName].qty <= 0) delete cart[productName];
 
 updateStatus4(productName);
 updateCartDisplay4();
-updateCartCount4();
+updateCartCount();
 }
 
     function toggleCartPanel4() {
