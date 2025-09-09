@@ -1,8 +1,3 @@
-window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-JEC4W4NZ5E');
     let slideIndex = 1;
     let slideTimer;
 
