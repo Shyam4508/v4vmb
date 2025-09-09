@@ -1,4 +1,4 @@
-  window.dataLayer = window.dataLayer || [];
+window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
@@ -69,8 +69,8 @@ const products = [
   { name: "Samalu Boondi", image: "Samalu Boondi.jpeg", price: 60, type: "weight", category: "hots" },
 
   { name: "Dry Fruit Mixture", image: "Dry Fruit Mixture.jpeg", price: 180, type: "weight", category: "dryfruits" },
-  { name: "Dry Fruit Laddu", image: "Dry Fruit Laddu.jpeg", price: 300, type: "weight", category: "laddus", minQty: 250, pricePer: 250 },
-  { name: "Cashew Bar", image: "Cashew Bar.jpeg", price: 200, type: "weight", category: "sweets", minQty: 250, pricePer: 250 },
+  { name: "Dry Fruit Laddu", image: "Dry Fruit Laddu.jpeg", price: 300, type: "weight", category: "sweets", minQty: 250, pricePer: 250 },
+  { name: "Cashew Bar", image: "Cashew Bar.jpeg", price: 200, type: "weight", category: "dryfruits", minQty: 170, pricePer: 0 },
   { name: "Panchadara Gavvalu", image: "Panchadara Gavvalu.jpg", price: 100, type: "weight", category: "sweets", minQty: 250, pricePer: 250 },
   { name: "Bellam Gavvalu", image: "Bellam Gavvalu.jpeg", price: 100, type: "weight", category: "sweets", minQty: 250, pricePer: 250 },
   { name: "Hot Gavvalu", image: "Hot Gavvalu.jpeg", price: 100, type: "weight", category: "hots", minQty: 250, pricePer: 250 }
@@ -91,12 +91,13 @@ function renderCategories() {
   categoryGrid.innerHTML = "";
 
   // Add "All Products" card first
-  const allCard = document.createElement("div");
-  allCard.className = "product-card";
-  allCard.style.cursor = "pointer";
-  allCard.innerHTML = `<h4>All Products</h4><p>View Everything</p>`;
-  allCard.addEventListener("click", () => renderProductsByCategory("all"));
-  categoryGrid.appendChild(allCard);
+const allCard = document.createElement("div");
+allCard.className = "product-card";
+allCard.style.cursor = "pointer";
+allCard.innerHTML = `<h4>All Products</h4>`;
+allCard.addEventListener("click", () => renderProductsByCategory("all"));
+
+categoryGrid.appendChild(allCard);
 
   // Get unique categories
   const categories = [...new Set(products.map(p => p.category))];
@@ -105,7 +106,7 @@ function renderCategories() {
     const div = document.createElement("div");
     div.className = "product-card";
     div.style.cursor = "pointer";
-    div.innerHTML = `<h4>${cat.toUpperCase()}</h4><p>View Products</p>`;
+    div.innerHTML = `<h4>${cat.toUpperCase()}</h4>`;
     div.addEventListener("click", () => renderProductsByCategory(cat));
     categoryGrid.appendChild(div);
   });
@@ -137,7 +138,14 @@ function renderProductsByCategory(category) {
         <div class="cart-status" id="status-${product.name}"></div>
       `;
     } else {
-      const quantityOptions = product.minQty === 250 ? [
+      const quantityOptions = product.name === "Cashew Bar" 
+  ? [
+      { value: 170, label: "170g" },
+      { value: 250, label: "250g" },
+      { value: 500, label: "500g" },
+      { value: 1000, label: "1KG" }
+    ]
+      :product.minQty === 250 ? [
         { value: 250, label: "250g" },
         { value: 500, label: "500g" },
         { value: 1000, label: "1KG" }
